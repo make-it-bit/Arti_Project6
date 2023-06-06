@@ -1,0 +1,19 @@
+{
+  "name": "web_scraper_arti",
+  "version": "1.0.0",
+  "description": "Project 6, web scraper tool.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Arti",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "puppeteer": "^20.5.0"
+  }
+}
