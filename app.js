@@ -31,7 +31,8 @@ async function extractLinks() {
 async function scrapeItems (
   pageObject,
   amountOfLinks,
-  scrollDelay
+  scrollDelay, 
+  warning
   ) { 
     let arrayOfCarLinks = [];
     try {
@@ -41,15 +42,18 @@ async function scrapeItems (
         arrayOfCarLinks = await pageObject.evaluate(extractLinks);
         //scrollHeight gives the 'maximum scrollable amount'
         previousWindowScrollHeight = await pageObject.evaluate('document.body.scrollHeight');
-        await pageObject.evaluate('window.scrollTo(0, document.body.scrollHeight');
+        await pageObject.evaluate('window.scrollTo(0, document.body.scrollHeight)');
         await pageObject.waitForFunction(`document.body.scrollHeight > ${previousWindowScrollHeight}`);
         await pageObject.waitForTimeout(scrollDelay);
       }
+      return arrayOfCarLinks;
     } catch(err) {
       return arrayOfCarLinks;
+    } finally {
+      clearTimeout(warning);
     };
+    
 };
-
 
 //this syntax immiedatly invokes the function
 (async function getArrayOfCarLinks() {
@@ -61,10 +65,24 @@ async function scrapeItems (
     //going to the vaihtoautot page
     await page.goto('https://www.nettiauto.com/yritys/2267640/vaihtoautot');
 
-    //calling the functions/'doing the heavy lifting'
-    const amountOfCarLinks = await page.evaluate(getCarLinksAmount);
+    //warning with setTimeOut;
+    const warning = setTimeout(() => {
+      console.log("This is taking abnormally long, something be wrong.");
+    }, 60000);
+    warning;
 
-    const linksOfCars = await scrapeItems(page, amountOfCarLinks, 500);
+    //calling the functions/'doing the heavy lifting'
+    let amountOfCarLinks;
+    try {
+      amountOfCarLinks = await page.evaluate(getCarLinksAmount);
+    } catch(e) {
+      console.log("Failed to get the amount of cars");
+      return;
+    } finally {
+      clearTimeout(warning);
+    };
+
+    const linksOfCars = await scrapeItems(page, amountOfCarLinks, 700, warning);
 
     console.log(linksOfCars);
 })();
